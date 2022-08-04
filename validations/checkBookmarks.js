@@ -1,3 +1,5 @@
+const { reset } = require("nodemon");
+
 const checkName = (req, res, next) => {
   if (req.body.name) {
     next();
@@ -19,7 +21,22 @@ const checkBoolean = (req, res, next) => {
   }
 };
 
+const checkForNoAdditionalParams = (req, res, next) => {
+  const { name, url, category, is_favorite, ...otherStuff } = req.body;
+  // CHECK IF THIS OTHERSTUFF IS AN EMPTY OBJECT
+  if (
+    otherStuff && // 👈 null and undefined check
+    Object.keys(otherStuff).length === 0 &&
+    Object.getPrototypeOf(otherStuff) === Object.prototype
+  ) {
+    next();
+  } else {
+    res.status(400).send({ error: "no additional parameters allowed" });
+  }
+};
+
 module.exports = {
   checkName,
   checkBoolean,
+  checkForNoAdditionalParams,
 };
