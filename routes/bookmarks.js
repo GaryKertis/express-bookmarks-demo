@@ -1,48 +1,51 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bookmarks = require('../models/bookmarks');
+const {
+  getAllBookmarks,
+  getBookmark,
+  createBookmark,
+} = require("../queries/bookmarks");
+const { checkBoolean, checkName } = require("../validations/checkBookmarks");
 
-router.use('/:id', (req, res, next) => {
-  if (!bookmarks[req.params.id]) {
-    res.status(404).send('Not Found');
+// Index
+router.get("/", async (req, res) => {
+  const allBookmarks = await getAllBookmarks();
+  if (allBookmarks[0]) {
+    res.status(200).json(allBookmarks);
   } else {
-    next();
+    console.error(allBookmarks);
+    res.status(500).json({ error: "server error" });
   }
 });
 
-// Index
-router.get('/', (req, res) => {
-  res.json(bookmarks);
-});
-
 // Show
-router.get('/:id', (req, res) => {
-  console.log(req.params, bookmarks);
-  res.json(bookmarks[req.params.id]);
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const bookmark = await getBookmark(id);
+  if (bookmark) {
+    res.json(bookmark);
+  } else {
+    res.status(404).json({ error: "not found" });
+  }
 });
-
 // Create
-router.post('/', (req, res) => {
-  bookmarks.push(req.body);
-  res.json(bookmarks[bookmarks.length - 1]);
+router.post("/", checkBoolean, checkName, async (req, res) => {
+  try {
+    const bookmark = await createBookmark(req.body);
+    res.json(bookmark);
+  } catch (error) {
+    res.status(400).json({ error: error });
+  }
 });
 
 // UPDATE
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   // ?????
-  const { id } = req.params;
-  const newData = req.body;
-  bookmarks[id] = newData;
-  res.send(bookmarks[id]);
 });
 
 //DELETE
-router.delete('/:id', (req, res) => {
+router.delete("/:id", (req, res) => {
   // ?????
-  const { id } = req.params;
-  //what do we do to bookmarks?
-  bookmarks.splice(id, 1);
-  res.send(bookmarks);
 });
 
 module.exports = router;
