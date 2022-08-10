@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const {
   getAllReviews,
   getReview,
@@ -10,7 +10,8 @@ const {
 
 router.get("/", async (req, res) => {
   // what really goes here???
-  const allReviews = await getAllReviews();
+  const { bookmark_id } = req.params;
+  const allReviews = await getAllReviews(bookmark_id);
   if (allReviews[0]) {
     res.status(200).json(allReviews);
   } else {
@@ -31,7 +32,7 @@ router.get("/:id", async (req, res) => {
 // Create
 router.post("/", async (req, res) => {
   try {
-    const review = await createReview(req.body);
+    const review = await createReview(req.params.bookmark_id, req.body);
     res.json(review);
   } catch (error) {
     res.status(400).json({ error: error });
@@ -40,8 +41,13 @@ router.post("/", async (req, res) => {
 
 // UPDATE
 router.put("/:id", async (req, res) => {
+  console.log(req.params);
   try {
-    const review = await updateReview(req.params.id, req.body);
+    const review = await updateReview(
+      req.params.id,
+      req.params.bookmark_id,
+      req.body
+    );
     res.json(review);
   } catch (error) {
     res.status(400).json({ error: error });
