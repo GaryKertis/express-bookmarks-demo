@@ -10,7 +10,9 @@ const checkName = (req, res, next) => {
 
 const checkBoolean = (req, res, next) => {
   const { is_favorite } = req.body;
+  console.log(is_favorite);
   if (
+    is_favorite ||
     is_favorite == "true" ||
     is_favorite == "false" ||
     is_favorite == undefined
@@ -21,22 +23,7 @@ const checkBoolean = (req, res, next) => {
   }
 };
 
-const checkForNoAdditionalParams = (req, res, next) => {
-  const { name, url, category, is_favorite, ...otherStuff } = req.body;
-  // CHECK IF THIS OTHERSTUFF IS AN EMPTY OBJECT
-  if (
-    otherStuff && // 👈 null and undefined check
-    Object.keys(otherStuff).length === 0 &&
-    Object.getPrototypeOf(otherStuff) === Object.prototype
-  ) {
-    next();
-  } else {
-    res.status(400).send({ error: "no additional parameters allowed" });
-  }
-};
-
 module.exports = {
   checkName,
   checkBoolean,
-  checkForNoAdditionalParams,
 };

@@ -7,11 +7,7 @@ const {
   updateBookmark,
   createBookmark,
 } = require("../queries/bookmarks");
-const {
-  checkBoolean,
-  checkName,
-  checkForNoAdditionalParams,
-} = require("../validations/checkBookmarks");
+const { checkBoolean, checkName } = require("../validations/checkBookmarks");
 
 // Index
 router.get("/", async (req, res) => {
@@ -35,36 +31,24 @@ router.get("/:id", async (req, res) => {
   }
 });
 // Create
-router.post(
-  "/",
-  checkBoolean,
-  checkName,
-  checkForNoAdditionalParams,
-  async (req, res) => {
-    try {
-      const bookmark = await createBookmark(req.body);
-      res.json(bookmark);
-    } catch (error) {
-      res.status(400).json({ error: error });
-    }
+router.post("/", checkBoolean, checkName, async (req, res) => {
+  try {
+    const bookmark = await createBookmark(req.body);
+    res.json(bookmark);
+  } catch (error) {
+    res.status(400).json({ error: error });
   }
-);
+});
 
 // UPDATE
-router.put(
-  "/:id",
-  checkBoolean,
-  checkName,
-  checkForNoAdditionalParams,
-  async (req, res) => {
-    try {
-      const bookmark = await updateBookmark(req.params.id, req.body);
-      res.json(bookmark);
-    } catch (error) {
-      res.status(400).json({ error: error });
-    }
+router.put("/:id", checkBoolean, checkName, async (req, res) => {
+  try {
+    const bookmark = await updateBookmark(req.params.id, req.body);
+    res.json(bookmark);
+  } catch (error) {
+    res.status(400).json({ error: error });
   }
-);
+});
 
 //DELETE
 router.delete("/:id", async (req, res) => {
